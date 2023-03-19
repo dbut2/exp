@@ -1,6 +1,7 @@
 package math
 
 import (
+	"github.com/dbut2/exp/slices"
 	"sort"
 )
 
@@ -161,11 +162,9 @@ type number interface {
 }
 
 func Sum[T number](s []T) T {
-	t := T(0)
-	for _, i := range s {
-		t += i
-	}
-	return t
+	return slices.Fold(s, T(0), func(last T, current T) T {
+		return last + current
+	})
 }
 
 func SumMap[T comparable, N number](s map[T]N) N {
@@ -186,10 +185,14 @@ func SumMapIf[T comparable, N number](s map[T]N, predicate func(T) bool) N {
 	return t
 }
 
-func Pow[N number](x, y N) N {
-	val := N(1)
-	for i := N(0); i < y; i++ {
-		val *= x
+func Pow[N number](x N, y int) N {
+	v := N(1)
+	for y > 0 {
+		if y&1 == 1 {
+			v *= x
+		}
+		x *= x
+		y >>= 1
 	}
-	return val
+	return v
 }
